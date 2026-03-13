@@ -2,7 +2,7 @@
 title: Multi PDF Chatbot
 emoji: 📚
 colorFrom: blue
-colorTo: cyan
+colorTo: blue
 sdk: streamlit
 sdk_version: "1.42.0"
 python_version: "3.11"
