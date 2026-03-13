@@ -1,3 +1,9 @@
-altair
-pandas
 streamlit
+langchain
+langchain-community
+langchain-text-splitters
+PyPDF2
+chromadb
+sentence-transformers
+groq
+python-dotenv
