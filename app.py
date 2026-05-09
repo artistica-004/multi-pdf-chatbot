@@ -1,5 +1,5 @@
 import streamlit as st
-from rag_engine import build_vector_store
+from rag_engine import build_vector_store, web_search
 from agent import run_agent
 
 st.set_page_config(
@@ -40,6 +40,9 @@ with st.sidebar:
                     st.session_state.summaries = summaries
                     st.session_state.chat_history = []
                     st.session_state.followup_question = None
+                    st.session_state.last_followups = []
+                    st.session_state.web_search_query = None
+                    st.session_state.show_web_prompt = False
                     st.success("✅ Done! You can now ask questions.")
 
     if "summaries" in st.session_state:
@@ -52,19 +55,21 @@ with st.sidebar:
 # ── Initialize session state ──
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
-
 if "followup_question" not in st.session_state:
     st.session_state.followup_question = None
-
 if "last_followups" not in st.session_state:
     st.session_state.last_followups = []
+if "web_search_query" not in st.session_state:
+    st.session_state.web_search_query = None
+if "show_web_prompt" not in st.session_state:
+    st.session_state.show_web_prompt = False
 
 # ── Show chat history ──
 for message in st.session_state.chat_history:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# ── Show follow-up buttons OUTSIDE chat ──
+# ── Show follow-up buttons ──
 if st.session_state.last_followups:
     st.markdown("**💡 You might also want to ask:**")
     cols = st.columns(len(st.session_state.last_followups))
@@ -73,9 +78,49 @@ if st.session_state.last_followups:
             if st.button(q, key=f"fu_{i}", use_container_width=True):
                 st.session_state.followup_question = q
                 st.session_state.last_followups = []
+                st.session_state.show_web_prompt = False
                 st.rerun()
 
-# ── Get question from input or follow-up click ──
+# ── Show web search prompt ──
+if st.session_state.show_web_prompt:
+    st.markdown("---")
+    st.markdown("🌐 **Should I web search this for you?**")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("✅ Yes, search the web!", use_container_width=True):
+            st.session_state.show_web_prompt = False
+            st.session_state.last_followups = []
+
+            with st.chat_message("assistant"):
+                with st.spinner("🌐 Searching the web..."):
+                    web_result = web_search(st.session_state.web_search_query)
+
+                st.markdown("**🌐 Here is what I found online:**")
+                st.markdown(web_result)
+
+            st.session_state.chat_history.append({
+                "role": "assistant",
+                "content": f"**🌐 Web Search Results:**\n\n{web_result}"
+            })
+            st.session_state.web_search_query = None
+            st.rerun()
+
+    with col2:
+        if st.button("❌ No thanks!", use_container_width=True):
+            st.session_state.show_web_prompt = False
+            st.session_state.web_search_query = None
+
+            with st.chat_message("assistant"):
+                st.markdown("Okay! Let me know if you need anything else. 😊")
+
+            st.session_state.chat_history.append({
+                "role": "assistant",
+                "content": "Okay! Let me know if you need anything else. 😊"
+            })
+            st.rerun()
+
+# ── Get question ──
 question = st.chat_input("Ask a question about your PDFs...")
 
 if st.session_state.followup_question:
@@ -87,7 +132,9 @@ if question:
     if "vector_store" not in st.session_state:
         st.warning("⚠️ Please upload PDFs and click Process PDFs first.")
     else:
-        # Show user message
+        st.session_state.show_web_prompt = False
+        st.session_state.last_followups = []
+
         with st.chat_message("user"):
             st.markdown(question)
         st.session_state.chat_history.append({
@@ -95,7 +142,6 @@ if question:
             "content": question
         })
 
-        # Generate answer
         with st.chat_message("assistant"):
             with st.spinner("🤖 Agent is thinking..."):
                 answer, relevant_chunks, followups = run_agent(
@@ -106,17 +152,29 @@ if question:
 
             st.markdown(answer)
 
-            # Save follow-ups to session state
-            if followups:
+            # Check if answer was not found
+            not_found = "not available in the uploaded documents" in answer.lower()
+
+            if not_found:
+                st.warning("❌ This information was not found in your PDFs.")
+
+            # Save web search query and show prompt
+            st.session_state.web_search_query = question
+            st.session_state.show_web_prompt = True
+
+            # Save follow-ups
+            if followups and not not_found:
                 st.session_state.last_followups = followups
 
             # Show source chunks
-            if relevant_chunks:
+            if relevant_chunks and not not_found:
                 with st.expander("📎 View source chunks used"):
                     for i, (doc, score) in enumerate(relevant_chunks):
                         source = doc.metadata.get("source", "Unknown")
                         page = doc.metadata.get("page", "?")
-                        st.markdown(f"**Chunk {i+1}** — `{source}` · Page {page}")
+                        st.markdown(
+                            f"**Chunk {i+1}** — `{source}` · Page {page}"
+                        )
                         st.caption(doc.page_content[:300] + "...")
                         st.divider()
 

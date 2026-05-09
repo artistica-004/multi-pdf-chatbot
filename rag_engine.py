@@ -5,8 +5,10 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 from groq import Groq
+from serpapi import GoogleSearch
 
 load_dotenv()
+
 
 def extract_text_from_pdfs(pdf_files):
     all_pages = []
@@ -83,7 +85,7 @@ Instructions:
 - Be direct and simple, no unnecessary explanation
 - No repetition at all
 - Mention source like this: (Source: filename.pdf, Page 3)
-- If answer is not in the documents say: "This information is not available in the uploaded documents."
+- If answer is not in the documents say exactly: "This information is not available in the uploaded documents."
 - Do not say "based on the provided chunks" or "not provided in chunks"
 
 Answer:"""
@@ -140,6 +142,29 @@ Reply with only 3 questions, one per line. Nothing else."""
     )
     questions = response.choices[0].message.content.strip().split('\n')
     return [q.strip() for q in questions if q.strip()][:3]
+
+
+def web_search(query):
+    try:
+        search = GoogleSearch({
+            "q": query,
+            "api_key": os.getenv("SERP_API_KEY"),
+            "num": 3
+        })
+        results = search.get_dict()
+
+        web_answer = ""
+        if "organic_results" in results:
+            for i, result in enumerate(results["organic_results"][:3]):
+                title = result.get("title", "")
+                snippet = result.get("snippet", "")
+                link = result.get("link", "")
+                web_answer += f"**{title}**\n{snippet}\n🔗 {link}\n\n"
+
+        return web_answer if web_answer else "No results found online."
+
+    except Exception as e:
+        return f"Web search failed: {str(e)}"
 
 
 def build_vector_store(pdf_files):
