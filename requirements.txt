@@ -7,3 +7,4 @@ chromadb
 sentence-transformers
 groq
 python-dotenv
+serpapi
