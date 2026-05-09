@@ -182,7 +182,6 @@ def build_vector_store(pdf_files):
 
     return vector_store, summaries, None
 
-
 def answer_question(vector_store, question, pdf_names):
     relevant_chunks = search_relevant_chunks(vector_store, question, k=6)
     answer, _ = generate_answer(question, relevant_chunks, pdf_names)
