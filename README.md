@@ -9,352 +9,331 @@ python_version: "3.11"
 app_file: app.py
 pinned: false
 ---
+# 📚 Multi-PDF Chatbot — Agentic RAG System
 
-# 📚 Multi-PDF Agentic Chatbot
-
-Ask questions across multiple PDFs at once. 
-Get answers with exact source citations — document name + page number.
-
-## Live Demo
-Try it here: https://huggingface.co/spaces/artistica-004/multi-pdf-chatbot
-
-## 🎯 Objective
-
-This project was built as part of Task 2A — Fix My Life with AI.
-
-The goal was to identify a genuine real-world problem, 
-design a practical AI solution for it, and demonstrate 
-a measurable before vs after improvement.
+> **Task 2A — Fix My Life with AI (System Thinking)**  
+> Built by: Shivani | Live Demo: https://huggingface.co/spaces/artistica-004/multi-pdf-chatbot
 
 ---
 
-## 😤 Step 1 — The Pain (Why This Was Built)
+## Objective
 
-Every single study session I found myself with 4-5 PDF 
-tabs open simultaneously. Finding one answer meant:
-
-- Switching between tabs constantly
-- Losing my train of thought every time I switched
-- Re-reading the same sections because I forgot 
-  which PDF had what
-- Using Ctrl+F but not knowing which PDF to search first
-- Spending 30-45 minutes just navigating — 
-  before even starting to understand the content
-
-**This happened every single day.**
-
-I could not skip it — these were study materials and 
-research documents I was required to understand deeply.
-I could not delegate it — the comprehension was mine to do.
-
-### Why existing tools failed:
-
-| Tool | Why It Failed |
-|------|--------------|
-| Ctrl+F | One PDF at a time, exact keyword needed |
-| Google | Cannot access private PDFs |
-| ChatGPT | No grounding in actual documents, hallucinations |
-| Adobe Acrobat | One file at a time, no semantic search |
-
-**The real problem was not volume. 
-It was context reconstruction from scattered sources.**
+Identify a genuine problem from your own life and design a practical AI solution for it. This task evaluates the ability to think clearly about real-world problems, not hypothetical ones.
 
 ---
 
-## 📋 Step 2 — Workflow Before This Tool
+## Step 1 — Identify the Pain
 
-### Old process (10 steps):
+Every single study session — and that means every day — I find myself staring at 3 to 5 PDF tabs open simultaneously. The moment I need to find one specific answer, the real problem begins. I cannot just Ctrl+F, because I do not always know which PDF has the answer. So I search one document, don't find it, switch to the next tab, lose track of what I was looking for, scroll back, read a paragraph that is almost right but not quite, and then repeat the whole thing across every document.
 
-1. Formulate the question in my head (~1 min)
-2. Open 3-5 PDFs in separate browser tabs (~2 min)
-3. Pick starting PDF based on gut feeling (~30 sec)
-4. Ctrl+F with a keyword (~1-2 min)
-5. Read surrounding context to check relevance (~3-5 min)
-6. If not found — switch tab, repeat Ctrl+F (~1-2 min)
-7. ⭐ Reconstruct mental context after tab switch (~5-10 min)
-8. Cross-reference information across PDFs (~5 min)
-9. Manually compile answer from fragments (~5 min)
-10. Re-verify source page before using answer (~2 min)
+This wastes **30–45 minutes per session** — not because the information is not there, but because I have no unified way to query across all of it at once. I cannot skip this. These are study materials, research papers, and internal docs that I am required to understand deeply. I cannot delegate it because the reading and comprehension is inherently mine to do.
 
-**Total: 30-45 minutes per session**
-**Most mentally demanding step: Step 7**
-Reconstructing context after every tab switch — 
-holding the original question, what was already read, 
-and the current document all in working memory at once.
+**Why existing tools fail:**
+- **Ctrl+F** — works inside one PDF, requires you to already know the exact keyword, gives no context
+- **Google** — cannot access your private PDFs at all
+- **ChatGPT without PDF context** — gives plausible-sounding answers with zero grounding in actual documents
+- **Adobe Acrobat search** — still one file at a time, no semantic understanding, no synthesized answers
 
-### Flowchart (Before):
+The core problem is not volume. It is **context reconstruction from scattered sources**. Every time I switch tabs, I lose the thread. That mental re-entry cost — multiplied by 15–20 tab switches per session — is where the time disappears.
+
+---
+
+## Step 2 — Document My Workflow (Before AI)
+
+### Old Workflow — Step by Step
+
+| Step | Action | Time |
+|------|--------|------|
+| 1 | Formulate question in my head | ~1 min |
+| 2 | Open 3–5 PDFs in separate browser tabs | ~2 min |
+| 3 | Choose starting PDF by gut feel | ~30 sec |
+| 4 | Ctrl+F keyword search in first PDF | ~1–2 min |
+| 5 | Read surrounding paragraph for context | ~3–5 min |
+| 6 | If not found — switch tab, repeat | ~1–2 min |
+| 7 | ⭐ Reconstruct mental context after switching | ~5–10 min |
+| 8 | Cross-reference information across PDFs | ~5 min |
+| 9 | Manually compile final answer | ~5 min |
+| 10 | Verify by re-opening source page | ~2 min |
+
+> ⭐ **Most mentally demanding step — Step 7: Context Reconstruction**  
+> After switching tabs, working memory has to simultaneously hold the original question, what was already read, and what still needs to be found. This is where most cognitive energy is spent and why sessions feel exhausting.
+
+**Total: 10 steps · 30–45 minutes per session · 15–20 tab switches**
+
+### Flowchart — Before AI
+
+```
 [Need an answer]
-|
-v
+       |
+       v
 [Open 3-5 PDFs in separate tabs]
-|
-v
+       |
+       v
 [Choose starting PDF by intuition]
-|
-v
+       |
+       v
 [Ctrl+F keyword]
-|
-FOUND? ──No──> [Switch tab, try next PDF]
-|                      |
-Yes             [Different keyword?]
-|               Yes /      \ No
-v               /            
-[Read paragraph] <──          [Mark as no info]
-|
+       |
+    FOUND? ──No──> [Switch tab, try next PDF]
+       |                      |
+      Yes             [Different keyword?]
+       |               Yes /       \ No
+       v              /              \
+[Read paragraph] <──          [Mark as "no info"]
+       |
 [Does it answer the question?]
-|
-Yes / No
-/      
-[Note source] [Try synonym / different section]
-|
+    Yes / No
+     /       \
+[Note source]  [Try synonym / different section]
+     |
 [All PDFs checked?]
-|
-Yes / No
-/      
-[Compile] [Loop back]
-|
-[Verify source]
-|
-[Done]
+    Yes / No
+     /       \
+[Compile answer]  [Loop back]
+       |
+[Verify source page]
+       |
+    [Done]
+```
 
 ---
 
-## 🧠 Step 3 — AI Solution Design
+## Step 3 — Design the AI Solution
 
 ### System Thinking
 
-**Architecture chosen: Agentic Pipeline System**
+**Architecture Chosen: Pipeline System**
 
-| Architecture | Why Not Chosen |
-|-------------|----------------|
-| Single Prompt | Cannot handle raw PDFs, token limit exceeded |
-| Basic Pipeline | No decision making, no adaptive behavior |
-| Agent System ✅ | Decision making + multi-step execution + adaptive |
+| Option | Why Not |
+|--------|---------|
+| Single Prompt | Cannot handle raw PDFs — token limits exceeded immediately |
+| Agent System | Overkill — adds latency and complexity for a well-defined problem |
+| **Pipeline** ✅ | Sequential, deterministic stages — each with clear input and output |
 
-**Why Agent System:**
-The bot needs to make decisions — is this question 
-simple or complex? Should it search PDFs or the web? 
-Does the answer actually exist in the documents?
-These decisions require an agent, not just a pipeline.
+### Full Architecture
 
-### Full Architecture:
-User Question
-|
-v
-[Analyze Question — simple or complex?]
-|
-Complex ──────────────> [Break into sub-questions]
-|                           |
-Simple                [Search each sub-question]
-|                           |
-[Search PDFs]            [Combine all answers]
-|                           |
-[Check answer quality] <──────────
-|
-FOUND ──> [Generate follow-up questions] ──> [Final Answer]
-|
-NOT_FOUND ──> ["Not available in documents"]
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    MULTI-PDF AGENTIC CHATBOT                    │
+└─────────────────────────────────────────────────────────────────┘
+
+  PDFs Uploaded
+       │
+       ▼
+┌─────────────┐
+│  PyPDF2     │  Extract text page by page
+│  Extractor  │  → {text, source, page} per page
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│   Chunker   │  RecursiveCharacterTextSplitter
+│  chunk=500  │  chunk_size=500, chunk_overlap=50
+│  overlap=50 │  → List of chunks + metadata
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│  Embeddings │  HuggingFace all-MiniLM-L6-v2
+│  MiniLM-L6  │  → 384-dim float vectors
+└──────┬──────┘
+       │
+       ▼
+┌─────────────┐
+│  ChromaDB   │  In-memory vector store
+│ Vector Store│  → Searchable index
+└──────┬──────┘
+       │
+       ▼
+┌─────────────────────────────────────┐
+│           AGENT LOOP                │
+│                                     │
+│  Question In                        │
+│       │                             │
+│       ▼                             │
+│  [Greeting check] ──Yes──> Done     │
+│       │                             │
+│       ▼                             │
+│  [Analyze: Simple or Complex?]      │
+│       │                             │
+│   Simple ──────────────────────┐   │
+│       │                        │   │
+│   Complex                      │   │
+│       │                        │   │
+│       ▼                        ▼   │
+│  [Break into              [Direct  │
+│   sub-questions]           Search] │
+│       │                        │   │
+│       ▼                        │   │
+│  [Search each              k=6     │
+│   sub-question]            chunks  │
+│       │                        │   │
+│       ▼                        │   │
+│  [Combine answers]             │   │
+│       │                        │   │
+│       └──────────┬─────────────┘   │
+│                  ▼                  │
+│         [Gap Detection]             │
+│          Found / Not Found          │
+│                  │                  │
+│                  ▼                  │
+│       [Generate Answer]             │
+│       Groq LLaMA 3.3 70B           │
+│                  │                  │
+│                  ▼                  │
+│    [Follow-up Suggestions]          │
+│                  │                  │
+│                  ▼                  │
+│      [Web Search Option]            │
+│       Yes ──> SerpAPI               │
+│       No  ──> Done                  │
+└─────────────────────────────────────┘
+       │
+       ▼
+  Final Answer with Source Citations
+  (Source: filename.pdf, Page N)
+```
 
 ### Data Layer
 
-**Inputs and Outputs:**
-
 | Stage | Input | Output |
 |-------|-------|--------|
-| PDF Extraction (PyPDF2) | Raw PDF files | Text + source + page per page |
-| Chunking | Page text | 500-char chunks with metadata |
-| Embedding (all-MiniLM-L6-v2) | Chunk strings | 384-dim vectors |
-| Vector Store (ChromaDB) | Vectors + metadata | Searchable index |
-| Retrieval | Question + k=6 | Top 6 relevant chunks |
-| Generation (Groq LLaMA 3.3 70B) | Question + context | Cited answer |
+| PDF Extraction (PyPDF2) | Raw .pdf file bytes | List of {text, source, page} dicts |
+| Chunking | Page text strings | Chunk strings + metadata |
+| Embedding (all-MiniLM-L6-v2) | Chunk strings | 384-dim float vectors |
+| Vector Store (ChromaDB) | Vectors + metadata | Searchable in-memory index |
+| Retrieval | Question string, k=6 | Top 6 (chunk, score) pairs |
+| Generation (Groq LLaMA 3.3 70B) | Question + context | Answer with citations |
 
-**Why chunk_size=500, chunk_overlap=50:**
-- 500 chars = 3-5 sentences = one focused concept
-- Overlap of 50 ensures sentences on boundaries are not lost
-- Smaller chunks = more precise embeddings = better retrieval
+**Why chunk_size=500, chunk_overlap=50?**
+- 500 characters ≈ 3–5 sentences — large enough for context, small enough for precision
+- 50-character overlap ensures sentences at chunk boundaries are not lost
+- Smaller chunks (200) risk splitting sentences; larger chunks (1000) embed too broad a topic
 
 ### Edge Cases
 
-**Edge Case 1: Scanned PDF (image-based)**
-- Current handling: PyPDF2 returns empty string, 
-  page is skipped silently
-- Impact: User gets no answer with no explanation why
+**Edge Case 1: Scanned PDF (image-based, no selectable text)**
+- Current handling: PyPDF2 returns empty string, `if text and text.strip()` guard skips silently
+- Impact if unhandled: User gets "no answer found" with no explanation — actively misleading
 
 **Edge Case 2: Answer spans chunk boundary**
-- Current handling: 50-char overlap partially mitigates this
-- Impact: LLM may receive incomplete context and 
-  generate partial answer
+- Current handling: 50-character overlap partially mitigates this
+- Impact if unhandled: LLM receives half a definition and may hallucinate the missing half
 
-**Edge Case 3: Question not in any PDF**
-- Current handling: Agent checks answer quality, 
-  returns "not available in documents" clearly
-- Impact without handling: LLM halluculates 
-  a confident-sounding wrong answer
+**Edge Case 3: Question has no relevant content in any PDF**
+- Current handling: Gap detection checks answer quality and returns clear "not available" message
+- Impact if unhandled: LLM generates confident-sounding answer from low-relevance chunks
 
 ### Failure Simulation
 
-**Scenario: Groq API rate limit hit**
+**Scenario: Groq API rate limit hit mid-session**
 
-1. User uploads 4 PDFs and asks 10 rapid questions
-2. generate_answer() call raises RateLimitError
-3. User sees Python traceback — no friendly message
-4. Root cause: Free Groq tier has tokens-per-minute limit
-5. Fix: try/except around API call with friendly message
-   and retry logic
+1. User uploads 4 PDFs and asks 10 rapid questions on free Groq tier
+2. `generate_answer()` raises `RateLimitError` from Groq SDK
+3. User sees unhandled Python exception — no friendly message, no retry
+4. Root cause: Free tier enforces tokens-per-minute limits; no try/except around API call
+5. Fix: Wrap in try/except, catch `groq.RateLimitError`, show friendly message with retry option
 
 ### Trade-offs
 
 **Trade-off 1: chunk_size=500 vs chunk_size=1000**
-- Chose 500 for precise embeddings per concept
-- Sacrificed: multi-paragraph argument retrieval
-- Worth it: most questions are factual, not analytical
+- Chose 500 because: Smaller chunks produce more precise embeddings — one concept per chunk
+- Sacrificed: Multi-paragraph answers may be split across more chunks than k=6 retrieves
+- Worth it: Most questions are factual ("What is X?") — precision beats breadth
 
-**Trade-off 2: Local embeddings vs OpenAI embeddings**
-- Chose all-MiniLM-L6-v2 (local, free)
-- Sacrificed: higher quality semantic matching
-- Worth it: zero API cost, no data sent externally
+**Trade-off 2: HuggingFace local embeddings vs OpenAI embeddings**
+- Chose all-MiniLM-L6-v2 (local) because: Zero API cost, no rate limits, user data stays local
+- Sacrificed: OpenAI text-embedding-3-small produces higher quality embeddings
+- Worth it: For a student-use tool with cost sensitivity, "good enough" retrieval + strong LLM works
 
 ---
 
-## ✅ Step 4 — Proof of Concept
+## Step 4 — Proof of Concept
 
 ### Before vs After
 
 | Metric | Before (Manual) | After (AI Tool) |
 |--------|----------------|-----------------|
-| Time to find answer | 30-45 min | 8-15 seconds |
-| Steps required | 10 steps with loops | 3 steps |
-| Accuracy | Keyword dependent | Semantically grounded |
-| Context switching | 15-20 tab switches | Zero |
-| Source traceability | Manual memory | Auto cited |
-| Cross-doc synthesis | Manual notes | Automatic |
+| Time to find answer | 30–45 min per session | 8–15 seconds per question |
+| Steps required | 10 steps with loops | 3 steps: upload → process → ask |
+| Accuracy | Hit or miss — keyword guessing | Source-cited, grounded in documents |
+| Context switching | 15–20 tab switches | Zero |
+| Cross-document synthesis | Manual note-taking | Automatic — k=6 pulls from all PDFs |
+| Source traceability | Remember which tab had what | Every answer shows (Source: file.pdf, Page N) |
 
-### Actual Prompt Sent to Groq:
-You are a helpful and concise assistant.
-The user has uploaded these PDF documents:
+### Agentic Features Added
 
-document1.pdf
-document2.pdf
+| Feature | What It Does |
+|---------|-------------|
+| Decision Making | Classifies question as simple or complex before answering |
+| Multi-Step Execution | Breaks complex questions into sub-questions, answers each separately |
+| Workflow Orchestration | Follows fixed sequence: analyze → plan → execute → combine → answer |
+| Adaptive Behavior | Greetings handled separately; simple vs complex routed differently |
+| Auto PDF Summarization | Generates 3–4 line summary per PDF shown in sidebar on upload |
+| Follow-up Suggestions | Suggests 3 clickable related questions after every answer |
+| Gap Detection | Clearly says "not in documents" instead of hallucinating |
+| Web Search Integration | Offers Google web search via SerpAPI when answer not found or user wants more |
+
+### Sample Prompt Sent to Groq
+
+```
+You are a helpful and concise assistant. The user has uploaded these PDF documents:
+- Intern_Operating_System_V2.pdf
+- AI_Departement.pdf
 
 Relevant excerpts from the documents:
---- Chunk 1 from: document1.pdf, Page 3 ---
-[chunk text]
-Question: [user question]
+--- Chunk 1 from: Intern_Operating_System_V2.pdf, Page 3 ---
+[chunk text...]
+
+Question: What is the role of AI according to the playbook?
+
 Instructions:
+- Answer in maximum 4-5 lines only
+- Be direct and simple, no unnecessary explanation
+- Mention source like this: (Source: filename.pdf, Page 3)
+- If answer is not in the documents say: "This information is not available in the uploaded documents."
 
-Answer in maximum 4-5 lines only
-Be direct and simple
-No repetition
-Mention source: (Source: filename.pdf, Page 3)
-If not in documents say so clearly
-
-
-### Sample Q&A:
-
-**Example 1:**
-- Question: "What is the role of AI in the playbook?"
-- Answer: "AI is used to structure thinking, validate 
-  decisions and accelerate learning — not to replace 
-  thinking entirely. (Source: Intern Operating System V2.pdf, Page 3)"
-
-**Example 2:**
-- Question: "What is the salary structure?"
-- Answer: "This information is not available 
-  in the uploaded documents."
-
----
-
-## 🔍 Final Reflection
-
-**Q1: What is the weakest part?**
-The chunk boundary problem. When an answer spans 
-multiple paragraphs, k=6 may not retrieve all 
-relevant chunks. Also scanned PDFs are silently 
-skipped with no user warning.
-
-**Q2: What single failure would break it completely?**
-Groq API going down. Everything else runs locally 
-but without Groq, answer generation completely fails. 
-No fallback model exists currently.
-
-**Q3: If AI was removed, what would still be valuable?**
-Three things:
-1. Multi-PDF aggregation in one interface
-2. Chunk metadata system with source + page citations
-3. Semantic similarity search — still better than Ctrl+F
-
----
-
-## 🏗️ Architecture
-app.py          — Streamlit UI + chat interface
-agent.py        — Agentic decision making loop
-rag_engine.py   — RAG pipeline + vector store
-.env            — API keys
-requirements.txt — Dependencies
-
----
-
-## ⚙️ Agentic Features
-
-- ✅ Decision Making — simple vs complex question handling
-- ✅ Multi-Step Execution — complex questions broken into parts
-- ✅ Workflow Orchestration — analyze → plan → execute → combine
-- ✅ Adaptive Behavior — greetings handled separately
-- ✅ Auto PDF Summarization — summary shown on upload
-- ✅ Gap Detection — clearly states when answer not found
-- ✅ Follow-up Suggestions — 3 related questions after every answer
-
----
-
-## 🛠️ Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Frontend | Streamlit |
-| LLM | Groq LLaMA 3.3 70B |
-| Embeddings | HuggingFace all-MiniLM-L6-v2 |
-| Vector Store | ChromaDB |
-| PDF Extraction | PyPDF2 |
-| Chunking | LangChain RecursiveCharacterTextSplitter |
-| Agent Logic | Custom Python |
-
----
-
-## 🚀 Run Locally
-
-```bash
-git clone https://github.com/artistica-004/multi-pdf-chatbot
-cd multi-pdf-chatbot
-pip install -r requirements.txt
-```
-
-Create `.env` file:
-GROQ_API_KEY=your_groq_api_key_here
-
-Run:
-```bash
-streamlit run app.py
+Answer:
 ```
 
 ---
 
-## 📦 Requirements
-streamlit
-langchain
-langchain-community
-langchain-text-splitters
-PyPDF2
-chromadb
-sentence-transformers
-groq
-python-dotenv
+## Final Reflection
+
+**Q1: What is the weakest part of your solution?**  
+Scanned PDFs. If a PDF is image-based with no selectable text, PyPDF2 returns empty strings and the system silently skips those pages with no user warning. Also, answers requiring synthesis across long continuous passages may be incomplete because content is split across more chunks than k=6 retrieves.
+
+**Q2: What single failure mode would break it completely?**  
+Groq API unavailability. Every other component — PyPDF2, ChromaDB, HuggingFace embeddings — runs locally. But without Groq returning a response, answer generation fails entirely. There is no fallback model and no offline generation.
+
+**Q3: If AI were removed, what would still be valuable?**  
+Three things: (1) The multi-PDF interface — all documents in one place, better than juggling tabs. (2) The source citation system — every chunk tagged with filename and page number. (3) The semantic search — even without generation, returning the top 6 most relevant chunks is more useful than Ctrl+F.
 
 ---
 
-## 🔗 Links
+## Tech Stack
 
-- **Live Demo:**  https://huggingface.co/spaces/artistica-004/multi-pdf-chatbot
-- **GitHub:** https://github.com/artistica-004/multi-pdf-chatbot
+```
+Frontend     : Streamlit
+LLM          : Groq LLaMA 3.3 70B (llama-3.3-70b-versatile)
+Embeddings   : HuggingFace all-MiniLM-L6-v2
+Vector Store : ChromaDB
+PDF Parsing  : PyPDF2
+Chunking     : LangChain RecursiveCharacterTextSplitter
+Web Search   : SerpAPI (Google Search)
+Agent Logic  : Custom Python (agent.py)
+```
+
+## What We Evaluate
+
+- ✅ Real-world thinking
+- ✅ Problem understanding
+- ✅ Practical AI application
+- ✅ Honesty and self-reflection
 
 ---
+
+## Live Demo
+
+Try it here: https://huggingface.co/spaces/artistica-004/multi-pdf-chatbot
 
