@@ -21,4 +21,4 @@ Upload multiple PDFs and ask questions across all of them. Get answers with exac
 - Powered by Groq LLaMA 3.3 70B
 
 ## Live Demo
-Try it here: https://shivani-multi-pdf-chatbot.streamlit.app
+Try it here: https://huggingface.co/spaces/artistica-004/multi-pdf-chatbot
